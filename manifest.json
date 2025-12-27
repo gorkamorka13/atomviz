@@ -8,12 +8,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "atomviz.png",
+      "src": "atomviz-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "atomviz.png",
+      "src": "atomviz-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

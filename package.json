@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@google/genai": "^1.33.0",
-    "@react-three/drei": "^9.0.0",
-    "@react-three/fiber": "^9.0.0",
+    "@react-three/fiber": "^9.4.2",
+    "@react-three/drei": "^10.0.0",
     "lucide-react": "^0.560.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
