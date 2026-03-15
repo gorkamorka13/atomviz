@@ -84,32 +84,36 @@ const Axes: React.FC = () => {
   return <axesHelper args={[5]} />;
 }
 
+// Fonction pour déterminer la couleur en fonction de la couche (n) et sous-couche (l)
+const getOrbitalColor = (n: number, l: number) => {
+  // Couleurs plus saturées et distinctes pour le blending additif
+  if (n === 1) return "#ff1111"; // Rouge pur pour le coeur 1s
+  if (l === 0) return "#0066ff"; // Bleu électrique pour s (n>1)
+  if (l === 1) return "#dd00ff"; // Violet/Magenta vibrant pour p
+  if (l === 2) return "#00dd44"; // Vert vibrant pour d
+  return "#00ffff"; // Cyan pour f/autres
+};
+
 const OrbitalViewer: React.FC<OrbitalViewerProps> = ({ orbitals, pointCount, rotationSpeed }) => {
   
-  // Fonction pour déterminer la couleur en fonction de la couche (n) et sous-couche (l)
-  const getOrbitalColor = (n: number, l: number) => {
-    // Couleurs plus saturées et distinctes pour le blending additif
-    if (n === 1) return "#ff1111"; // Rouge pur pour le coeur 1s
-    if (l === 0) return "#0066ff"; // Bleu électrique pour s (n>1)
-    if (l === 1) return "#dd00ff"; // Violet/Magenta vibrant pour p
-    if (l === 2) return "#00dd44"; // Vert vibrant pour d
-    return "#00ffff"; // Cyan pour f/autres
-  };
-
   // Suppression de la logique qui réduisait le nombre de points par 0.7 en mode superposition.
   // Désormais, le slider contrôle exactement le nombre de points demandés à la génération.
   const targetPointCount = pointCount;
 
   // --- CALCUL DU ZOOM AUTOMATIQUE ---
-  // On trouve le 'n' maximum pour savoir à quel point l'atome est grand
-  const maxN = orbitals.length > 0 ? Math.max(...orbitals.map(o => o.n)) : 1;
-  
-  // Le rayon de l'orbitale grandit approximativement comme n^2
-  // On ajuste la position initiale de la caméra pour englober tout le nuage
-  const initialRadius = Math.max(15, maxN * maxN * 2.5);
-  
-  // On ajuste aussi la distance maximale de zoom pour permettre de s'éloigner suffisamment
-  const maxDistance = Math.max(250, initialRadius * 2.5);
+  const { initialRadius, maxDistance } = useMemo(() => {
+    // On trouve le 'n' maximum pour savoir à quel point l'atome est grand
+    const maxN = orbitals.length > 0 ? Math.max(...orbitals.map(o => o.n)) : 1;
+    
+    // Le rayon de l'orbitale grandit approximativement comme n^2
+    // On ajuste la position initiale de la caméra pour englober tout le nuage
+    const radius = Math.max(15, maxN * maxN * 2.5);
+    
+    // On ajuste aussi la distance maximale de zoom pour permettre de s'éloigner suffisamment
+    const distance = Math.max(250, radius * 2.5);
+    
+    return { initialRadius: radius, maxDistance: distance };
+  }, [orbitals]);
 
   // Clé unique basée sur les orbitales pour forcer le reset de la caméra quand on change d'orbitale
   const controlsKey = orbitals.map(o => `${o.n}${o.l}${o.m}`).join('-');

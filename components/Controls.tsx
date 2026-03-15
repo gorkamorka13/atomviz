@@ -18,6 +18,39 @@ interface ControlsProps {
   onClose?: () => void;
 }
 
+// Configuration étendue des niveaux incluant les états excités
+const levels = [
+  // Couche K, L, M
+  { n: 1, l: 0, label: '1s' },
+  { n: 2, l: 0, label: '2s' },
+  { n: 2, l: 1, label: '2p' },
+  { n: 3, l: 0, label: '3s' },
+  { n: 3, l: 1, label: '3p' },
+  { n: 3, l: 2, label: '3d' },
+  // Couche N
+  { n: 4, l: 0, label: '4s' },
+  { n: 4, l: 1, label: '4p' },
+  { n: 4, l: 2, label: '4d' },
+  { n: 4, l: 3, label: '4f' },
+  // Couche O (Excité)
+  { n: 5, l: 0, label: '5s' },
+  { n: 5, l: 1, label: '5p' },
+  { n: 5, l: 2, label: '5d' },
+  { n: 5, l: 3, label: '5f' },
+  // Couche P (Excité)
+  { n: 6, l: 0, label: '6s' },
+  { n: 6, l: 1, label: '6p' },
+  { n: 6, l: 2, label: '6d' },
+];
+
+// Helper pour les couleurs des badges superposition
+const getOrbitalBadgeColor = (n: number, l: number, isActive: boolean) => {
+   if (!isActive) return "border-slate-600 text-slate-500 bg-transparent";
+   if (n === 1) return "border-red-500 text-red-100 bg-red-900/40";
+   if (l === 0) return "border-blue-400 text-blue-100 bg-blue-900/40";
+   return "border-purple-500 text-purple-100 bg-purple-900/40";
+};
+
 const Controls: React.FC<ControlsProps> = ({ 
   orbital, 
   setOrbital, 
@@ -43,41 +76,8 @@ const Controls: React.FC<ControlsProps> = ({
     setOrbital({ ...orbital, m: newM });
   };
 
-  // Generate available m values based on current l (-l to +l)
+// Generate available m values based on current l (-l to +l)
   const mValues = Array.from({ length: 2 * orbital.l + 1 }, (_, i) => i - orbital.l);
-
-  // Configuration étendue des niveaux incluant les états excités
-  const levels = [
-    // Couche K, L, M
-    { n: 1, l: 0, label: '1s' },
-    { n: 2, l: 0, label: '2s' },
-    { n: 2, l: 1, label: '2p' },
-    { n: 3, l: 0, label: '3s' },
-    { n: 3, l: 1, label: '3p' },
-    { n: 3, l: 2, label: '3d' },
-    // Couche N
-    { n: 4, l: 0, label: '4s' },
-    { n: 4, l: 1, label: '4p' },
-    { n: 4, l: 2, label: '4d' },
-    { n: 4, l: 3, label: '4f' },
-    // Couche O (Excité)
-    { n: 5, l: 0, label: '5s' },
-    { n: 5, l: 1, label: '5p' },
-    { n: 5, l: 2, label: '5d' },
-    { n: 5, l: 3, label: '5f' },
-    // Couche P (Excité)
-    { n: 6, l: 0, label: '6s' },
-    { n: 6, l: 1, label: '6p' },
-    { n: 6, l: 2, label: '6d' },
-  ];
-  
-  // Helper pour les couleurs des badges superposition
-  const getOrbitalBadgeColor = (n: number, l: number, isActive: boolean) => {
-     if (!isActive) return "border-slate-600 text-slate-500 bg-transparent";
-     if (n === 1) return "border-red-500 text-red-100 bg-red-900/40";
-     if (l === 0) return "border-blue-400 text-blue-100 bg-blue-900/40";
-     return "border-purple-500 text-purple-100 bg-purple-900/40";
-  };
 
   // Correction: Utilisation d'un chemin relatif simple.
   const logoPath = "atomviz.png";

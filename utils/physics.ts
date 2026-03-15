@@ -67,28 +67,34 @@ const getAngularPart = (x: number, y: number, z: number, r: number, l: number, m
 
   // f orbitals (l=3)
   if (l === 3) {
-    if (m === 0) return (z * (5 * z * z - 3 * r * r)) / Math.pow(r, 3);
+    const r2 = r * r;
+    const r3 = r2 * r;
+    if (m === 0) return (z * (5 * z * z - 3 * r2)) / r3;
     if (Math.abs(m) === 1) {
       const component = m === 1 ? x : y;
-      return (component * (5 * z * z - r * r)) / Math.pow(r, 3);
+      return (component * (5 * z * z - r2)) / r3;
     }
     if (Math.abs(m) === 2) {
       const zComponent = z;
       const xyComponent = m === 2 ? (x * x - y * y) : (x * y);
-      return (zComponent * xyComponent) / Math.pow(r, 3);
+      return (zComponent * xyComponent) / r3;
     }
     if (Math.abs(m) === 3) {
-       if (m === 3) return (x * (x * x - 3 * y * y)) / Math.pow(r, 3);
-       return (y * (3 * x * x - y * y)) / Math.pow(r, 3);
+       if (m === 3) return (x * (x * x - 3 * y * y)) / r3;
+       return (y * (3 * x * x - y * y)) / r3;
     }
   }
 
   // g orbitals (l=4) et au-delà
   if (l >= 4) {
+      const r2 = r * r;
+      const r4 = r2 * r2;
+      const z2 = z * z;
+      const z4 = z2 * z2;
       // Approximation générique pour visualiser la symétrie sans formule exacte complexe
       // Suffisant pour l'aspect visuel des lobes
-      if (m === 0) return (35*Math.pow(z,4) - 30*z*z*r*r + 3*Math.pow(r,4)) / Math.pow(r, 4);
-      return (x*y*z*z) / Math.pow(r, 4); 
+      if (m === 0) return (35 * z4 - 30 * z2 * r2 + 3 * r4) / r4;
+      return (x*y*z2) / r4; 
   }
 
   return 1;
@@ -96,8 +102,8 @@ const getAngularPart = (x: number, y: number, z: number, r: number, l: number, m
 
 
 // Main probability density function |Ψ|^2
-const getProbability = (x: number, y: number, z: number, n: number, l: number, m: number): number => {
-  const r = distance(x, y, z);
+const getProbability = (x: number, y: number, z: number, n: number, l: number, m: number, rSq?: number): number => {
+  const r = rSq !== undefined ? Math.sqrt(rSq) : distance(x, y, z);
   
   const R = getRadialPart(r, n, l);
   const Y = getAngularPart(x, y, z, r, l, m);
@@ -167,9 +173,10 @@ export const generateOrbitalPoints = (n: number, l: number, m: number, count: nu
     const z = (Math.random() - 0.5) * 2 * limit;
 
     // Early exit si hors de la sphère
-    if (x*x + y*y + z*z > limitSq) continue;
+    const rSq = x*x + y*y + z*z;
+    if (rSq > limitSq) continue;
 
-    const prob = getProbability(x, y, z, n, l, m);
+    const prob = getProbability(x, y, z, n, l, m, rSq);
 
     // Rejection check stable
     if (Math.random() * maxProb < prob) {
