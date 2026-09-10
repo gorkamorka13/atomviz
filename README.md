@@ -13,8 +13,7 @@ AtomViz est une application web React qui génère et affiche en temps réel un 
 - **Mode orbitale unique** — Sélectionnez les nombres quantiques (n, l, m) pour visualiser n'importe quelle orbitale (1s, 2p, 3d, 4f, …) avec sa miniature schématique.
 - **Mode superposition** — Combinez plusieurs orbitales (configuration type Néon : 1s, 2s, 2p<sub>x</sub>, 2p<sub>y</sub>, 2p<sub>z</sub>) pour visualiser la structure électronique d'un atome.
 - **Rendu 3D interactif** — Nuage de points Three.js avec orbitation à la souris/tactile, rotation automatique et densité de points réglable (jusqu'à plusieurs dizaines de milliers de points).
-- **Descriptions physiques locales** — Forme, nœuds, symétrie, énergie et équation simplifiée de la fonction d'onde calculés localement (`utils/physics.ts`), sans connexion requise.
-- **Description IA (optionnel)** — Explication pédagogique enrichie générée par l'API Gemini (`gemini-2.5-flash`), avec repli automatique sur la description locale en cas d'erreur.
+- **Descriptions physiques locales** — Forme, nœuds, symétrie, énergie et équation simplifiée de la fonction d'onde, calculés directement dans l'application (`utils/physics.ts`), sans connexion requise.
 - **Responsive / PWA** — Sidebar coulissante sur mobile (gestes de swipe), manifest web et icônes incluses.
 
 ## 🚀 Démarrage rapide
@@ -25,29 +24,11 @@ AtomViz est une application web React qui génère et affiche en temps réel un 
 # 1. Installer les dépendances
 npm install
 
-# 2. (Optionnel) Configurer la clé API Gemini
-#    Créez un fichier .env.local à la racine :
-echo "API_KEY=votre_cle_gemini" > .env.local
-
-# 3. Lancer le serveur de développement
+# 2. Lancer le serveur de développement
 npm run dev
 ```
 
 L'application est disponible sur **http://localhost:5173** (l'URL exacte est affichée dans le terminal).
-
-> 💡 La clé API n'est **pas obligatoire** : les descriptions physiques calculées localement fonctionnent sans elle. Elle n'est nécessaire que pour les explications générées par l'IA.
-
-### Obtenir une clé API Gemini
-
-1. Rendez-vous sur [Google AI Studio](https://aistudio.google.com/apikey)
-2. Créez une clé API gratuite
-3. Ajoutez-la dans un fichier `.env.local` à la racine du projet :
-
-```env
-API_KEY=votre_cle_gemini
-```
-
-> ⚠️ Le nom de la variable doit être `API_KEY` : le code lit `process.env.API_KEY` et la configuration Vite injecte les variables d'environnement dans le bundle (cf. `vite.config.ts`).
 
 ## 📜 Scripts disponibles
 
@@ -70,12 +51,10 @@ atomviz/
 │   ├── Controls.tsx            # Sidebar de contrôle (n, l, m, superposition…)
 │   ├── SchematicThumbnail.tsx  # Miniature schématique 2D de l'orbitale
 │   └── SimpleOrbitControls.tsx # Contrôles d'orbitation caméra
-├── services/
-│   └── geminiService.ts        # Appel API Gemini (description IA)
 ├── utils/
-│   └── physics.ts              # Calculs des fonctions d'onde et descriptions locales
+│   └── physics.ts              # Calculs des fonctions d'onde et descriptions
 ├── public/                     # Icônes PWA et manifest
-└── vite.config.ts              # Configuration Vite (polyfill process.env)
+└── vite.config.ts              # Configuration Vite
 ```
 
 ### Stack technique
@@ -85,8 +64,3 @@ atomviz/
 - **[Vite](https://vitejs.dev)** — Build et serveur de développement
 - **[Tailwind CSS](https://tailwindcss.com)** — Styles (thème sombre)
 - **[lucide-react](https://lucide.dev)** — Icônes
-- **[@google/genai](https://www.npmjs.com/package/@google/genai)** — SDK API Gemini
-
-## 🔒 Sécurité
-
-Ne commitez jamais votre clé API. Le fichier `.env.local` est exclu du suivi Git via `.gitignore`. Notez toutefois que les variables injectées par Vite sont embarquées dans le bundle côté client : pour un déploiement public, préférez un proxy serveur pour protéger votre clé.
